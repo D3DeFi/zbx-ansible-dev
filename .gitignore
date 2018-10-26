@@ -1,0 +1,6 @@
+*.pyc
+env/
+*.swp
+*.log
+inventory
+inventory/*

@@ -1,0 +1,3 @@
+---
+- hosts: all
+  name: Gather facts about droplet sizes, images, regions and so on from DigitalOcean

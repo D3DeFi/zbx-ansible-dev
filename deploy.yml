@@ -1,0 +1,11 @@
+---
+- hosts: all
+  name: Spin up and configure testing environment in DigitalOcean
+  tasks:
+    - name: Spin up DigitalOcean droplets
+      digital_ocean:
+        api_token: '{{ digital_ocean_api_token }}'
+        name: '{{ inventory_hostname }}'
+        command: droplet
+        state: present
+
