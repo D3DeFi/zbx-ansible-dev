@@ -20,13 +20,17 @@ Fill in details in `inventory` file:
 
 ```ini
 [zabbix-nodes]
+# Add as many hosts as you want here, but use unique names to prevent ansible from deploying to your existing VMs
 
 [all:vars]
+# Generate new API token at https://cloud.digitalocean.com/account/api/tokens
 digital_ocean_api_token=''
-# Set these here or per host basis
-digital_ocean_image=''
-digital_ocean_region=''
-digital_ocean_size=''
-digital_ocean_ssh_keys=''
 
+# Set these here or per host basis, provided values are just examples
+# use gather-do-info.yml playbook if you don't know what to fill in
+digital_ocean_region='ams3'
+digital_ocean_image='ubuntu-16-04-x64'
+digital_ocean_size='s-1vcpu-1gb'
+# Requires list of SSH key IDs delimited by comma - make sure at least one SSH key is present in your account at https://cloud.digitalocean.com/account/security
+digital_ocean_ssh_keys='10101,10102,10103'
 ```
