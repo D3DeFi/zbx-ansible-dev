@@ -1,3 +1,84 @@
 ---
-- hosts: all
-  name: Gather facts about droplet sizes, images, regions and so on from DigitalOcean
+- hosts: localhost
+  name: Gather facts about droplet sizes, images, regions and so on from DigitalOcean into facts file for future reference
+  gather_facts: False
+  vars:
+    save_file: ./digital_ocean.facts
+
+  tasks:
+    - block:
+        - name: Gather facts about DigitalOcean regions
+          digital_ocean_region_facts:
+            api_token: '{{ digital_ocean_api_token }}'
+          register: _do_regions
+
+        - name: Save information about DigitalOcean regions
+          lineinfile:
+            path: '{{ save_file }}'
+            line: 'Region - {{ item.slug }} ({{ item.name }})'
+            regexp: '^Region - {{ item.slug }}.*$'
+            state: present
+            create: yes
+          loop: '{{ _do_regions.data }}'
+          loop_control:
+            label: '{{ item.slug }}'
+
+      tags: regions
+
+    - block:
+        - name: Gather facts about DigitalOcean droplet images
+          digital_ocean_image_facts:
+            api_token: '{{ digital_ocean_api_token }}'
+            image_type: distribution
+          register: _do_images
+
+        - name: Save information about DigitalOcean droplet images
+          lineinfile:
+            path: '{{ save_file }}'
+            line: 'Image - {{ item.slug }} ({{ item.distribution }} {{ item.name }})'
+            regexp: '^Image - {{ item.slug }}.*$'
+            state: present
+            create: yes
+          loop: '{{ _do_images.data }}'
+          loop_control:
+            label: '{{ item.slug }}'
+
+      tags: images
+
+    - block:
+        - name: Gather facts about DigitalOcean droplet sizes
+          digital_ocean_size_facts:
+            api_token: '{{ digital_ocean_api_token }}'
+          register: _do_sizes
+
+        - name: Save information about DigitalOcean droplet sizes
+          lineinfile:
+            path: '{{ save_file }}'
+            line: 'Size - {{ item.slug }} (CPU: {{ item.vcpus }}, MEM: {{ item.memory }}M, Disk: {{ item.disk }}G, Transfer: {{ item.transfer }}T, Price: {{ item.price_monthly }}$/M )'
+            regexp: '^Size - {{ item.slug }}.*$'
+            state: present
+            create: yes
+          loop: '{{ _do_sizes.data }}'
+          loop_control:
+            label: '{{ item.slug }}'
+
+      tags: sizes
+
+    - block:
+        - name: Gather facts about DigitalOcean SSH keys
+          digital_ocean_sshkey_facts:
+            api_token: '{{ digital_ocean_api_token }}'
+          register: _do_sshkeys
+
+        - name: Save information about DigitalOcean SSH keys
+          lineinfile:
+            path: '{{ save_file }}'
+            line: 'SSH key - {{ item.id }} ({{ item.name }} {{ item.fingerprint }})'
+            regexp: '^SSH key - {{ item.id }}.*$'
+            state: present
+            create: yes
+          loop: '{{ _do_sshkeys.ansible_facts.ssh_keys }}'
+          loop_control:
+            label: '{{ item.id }}'
+
+      tags: sshkeys

@@ -4,3 +4,4 @@ env/
 *.log
 inventory
 inventory/*
+*.facts
