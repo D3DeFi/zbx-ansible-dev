@@ -8,7 +8,10 @@ Collection of ansible playbooks, terraform configurations and scripts to spin up
 Prerequisities
 --------------
 
-1. Terraform should be set up per [official instructions](https://www.terraform.io/intro/getting-started/install.html)
+1. Terraform should be set up per [official instructions](https://www.terraform.io/intro/getting-started/install.html) and init should be executed:
+```bash
+  terraform init
+```
 
 2. At least python >= 2.7 should be present before running (skip if virtualenv and pip are already present):
 ```bash
@@ -21,4 +24,24 @@ Prerequisities
 ```ini
 do_token    = "API_TOKEN_STRING"
 do_ssh_keys = [SSH_KEY_ID]
+```
+
+Usage
+-----
+
+1. Initialize testing infrastructure
+```bash
+  terraform plan
+  terraform apply
+```
+
+2. If there is need for bastion host and it was configured to `terraform.tfvars`:
+```bash
+  source scripts/setup-bastion.sh
+  # source scripts/setup-bastion.sh HOST  # if do_bastion_host is not set
+```
+
+3. Provision via ansible-playbook:
+```
+  ansible-playbook site.yml
 ```
