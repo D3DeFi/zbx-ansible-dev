@@ -1,36 +1,24 @@
 Description
 -----------
 
-Collection of ansible playbooks and scripts to spin up testing instances of Zabbix servers in cloud. Currently supported:
+Collection of ansible playbooks, terraform configurations and scripts to spin up testing instances of Zabbix servers in cloud. Currently supported:
 
 * DigitalOcean
 
-Installation
-------------
+Prerequisities
+--------------
 
-Ensure you have atleast python>=2.7, virtualenv and pip installed, then run:
+1. Terraform should be set up per [official instructions](https://www.terraform.io/intro/getting-started/install.html)
 
-```yaml
-  virtualenv env
-  source env/bin/activate
-  pip install -r requirements.txt
+2. At least python >= 2.7 should be present before running (skip if virtualenv and pip are already present):
+```bash
+  curl https://bootstrap.pypa.io/get-pip.py > get-pip.py
+  python get-pip.py && rm get-pip.py
+  pip install virtualenv
 ```
 
-Fill in details in `inventory` file:
-
+3. Any variables from `main.tf` should be overriden in `terraform.tfvars`. Minimum required variables are:
 ```ini
-[zabbix-nodes]
-# Add as many hosts as you want here, but use unique names to prevent ansible from deploying to your existing VMs
-
-[all:vars]
-# Generate new API token at https://cloud.digitalocean.com/account/api/tokens
-digital_ocean_api_token=''
-
-# Set these here or per host basis, provided values are just examples
-# use gather-do-info.yml playbook if you don't know what to fill in
-digital_ocean_region='ams3'
-digital_ocean_image='ubuntu-16-04-x64'
-digital_ocean_size='s-1vcpu-1gb'
-# Requires list of SSH key IDs delimited by comma - make sure at least one SSH key is present in your account at https://cloud.digitalocean.com/account/security
-digital_ocean_ssh_keys='10101,10102,10103'
+do_token    = "API_TOKEN_STRING"
+do_ssh_keys = [SSH_KEY_ID]
 ```

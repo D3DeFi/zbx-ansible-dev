@@ -2,6 +2,9 @@
 env/
 *.swp
 *.log
-inventory
-inventory/*
 *.facts
+tmp/*
+.ssh_dev_config
+.terraform
+terraform.tfstate*
+terraform.tfvars
