@@ -1,0 +1,4 @@
+- hosts: zabbix-dev-nodes
+  tasks:
+    - debug:
+        msg: '{{ ansible_default_ipv4.address }}'
