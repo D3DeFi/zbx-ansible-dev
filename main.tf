@@ -5,7 +5,11 @@ variable "do_token" {
 
 variable "do_image" {
     description = "Slug/image-id of distribution to install"
-    default     = "ubuntu-16-04-x64"
+    default     = {
+        "0" = "ubuntu-14-04-x64"  # zbx-2* requires ubuntu <= 14
+        "1" = "ubuntu-16-04-x64"
+        "2" = "ubuntu-16-04-x64"
+    }
 }
 
 variable "do_region" {
@@ -28,6 +32,7 @@ variable "do_bastion_host" {
     default     = ""
 }
 
+
 ### Resource and provider definitions for DigitalOcean
 provider "digitalocean" {
     token = "${var.do_token}"
@@ -39,7 +44,7 @@ resource "digitalocean_tag" "zbx-dev" {
 
 resource "digitalocean_droplet" "zbx-dev" {
     count       = 3
-    image       = "${var.do_image}"
+    image       = "${var.do_image[count.index]}"
     name        = "zbx-dev-node00${count.index + 1}"
     region      = "${var.do_region}"
     size        = "${var.do_size}"
@@ -48,8 +53,8 @@ resource "digitalocean_droplet" "zbx-dev" {
 
     provisioner "remote-exec" {
         inline = [
-            "which apt 2>&1 >/dev/null && apt install -y python || exit 0",
-            "which yum 2>&1 >/dev/null && yum install -y python || exit 0",
+            "sleep 5 && apt-get update",
+            "apt-get install -y python",
         ]
 
         connection {
