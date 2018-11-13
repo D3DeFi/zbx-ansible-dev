@@ -1,4 +1,14 @@
-- hosts: zabbix-dev-nodes
-  tasks:
-    - debug:
-        msg: '{{ ansible_default_ipv4.address }}'
+- hosts: zbx-dev-nodes
+  name: Configures hosts to run standalone zabbix-server installations with specified versions
+  vars:
+    mysql_bind_address: '127.0.0.1'
+    zabbix_version: '{{ zbx_version }}'
+    zabbix_url: '{{ ansible_host }}'
+    zabbix_server_database: mysql
+    zabbix_server_database_long: mysql
+    zabbix_server_dbport: 3306
+
+  roles:
+    - geerlingguy.mysql
+    - dj-wasabi.zabbix-server
+    - dj-wasabi.zabbix-web

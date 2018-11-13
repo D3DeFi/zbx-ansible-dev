@@ -8,40 +8,48 @@ Collection of ansible playbooks, terraform configurations and scripts to spin up
 Prerequisities
 --------------
 
-1. Terraform should be set up per [official instructions](https://www.terraform.io/intro/getting-started/install.html) and init should be executed:
+1. Following tools should be present:
+    * terraform ([doc](https://www.terraform.io/intro/getting-started/install.html))
+    * python2.7+ or python3+
+    * pip ([doc](https://pip.pypa.io/en/stable/installing/#installing-with-get-pip-py))
+    * (optional) virtualenv (`pip install virtualenv`)
+
+2. Create virtualenv (optional) and install requirements
 ```bash
-  terraform init
+virtualenv env
+source env/bin/activate
+pip install -r requirements.txt
 ```
 
-2. At least python >= 2.7 should be present before running (skip if virtualenv and pip are already present):
-```bash
-  curl https://bootstrap.pypa.io/get-pip.py > get-pip.py
-  python get-pip.py && rm get-pip.py
-  pip install virtualenv
-```
-
-3. Any variables from `main.tf` should be overriden in `terraform.tfvars`. Minimum required variables are:
+3. Any variables from `main.tf` should be overriden in `terraform.tfvars`. Required minimum is:
 ```ini
 do_token    = "API_TOKEN_STRING"
 do_ssh_keys = [SSH_KEY_ID]
 ```
 
+4. Finalize by downloading required ansible roles and initializing terraform:
+```bash
+terraform init
+ansible-galaxy install -r requirements.yml
+```
+
 Usage
 -----
 
-1. Initialize testing infrastructure
+1. Deploy testing infrastructure
 ```bash
-  terraform plan
-  terraform apply
+terraform plan
+terraform apply
 ```
 
 2. If there is need for bastion host and it was configured to `terraform.tfvars`:
 ```bash
-  source scripts/setup-bastion.sh
-  # source scripts/setup-bastion.sh HOST  # if do_bastion_host is not set
+source scripts/setup-bastion.sh
+# source scripts/setup-bastion.sh HOST  # if do_bastion_host is not set
 ```
 
 3. Provision via ansible-playbook:
 ```
-  ansible-playbook site.yml
+source env/bin/activate  # if using virtualenv
+ansible-playbook site.yml
 ```
