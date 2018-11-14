@@ -1,0 +1,107 @@
+- hosts: all
+  vars:
+    zbx_server_url: 'http://{{ ansible_host }}'
+    zbx_user: 'Admin'
+    zbx_password: 'zabbix'
+
+    zbx_icmp_template:
+      2.2: 'Template ICMP Ping'
+      3.0: 'Template ICMP Ping'
+      4.0: 'Template Module ICMP Ping'
+
+    zbx_host_groups:
+      - 'Linux servers'
+      - 'Test hostgroup1'
+      - 'Test hostgroup2'
+
+    zbx_host_macros:
+      - key: LOW_SPACE_LIMIT
+        value: 10
+
+  tasks:
+    - block:
+        - name: Create hostgroups in zabbix
+          zabbix_group:
+            server_url: '{{ zbx_server_url }}'
+            login_user: '{{ zbx_user }}'
+            login_password: '{{ zbx_password }}'
+            validate_certs: False
+            host_groups:
+              - '{{ zbx_host_groups }}'
+            state: present
+          register: _host_group
+          tags:
+            - hostgroups
+
+        - debug:
+            msg: '{{ _host_group }}'
+          tags:
+            - hostgroups
+
+        - name: Create templates in zabbix
+          zabbix_template:
+            server_url: '{{ zbx_server_url }}'
+            login_user: '{{ zbx_user }}'
+            login_password: '{{ zbx_password }}'
+            validate_certs: False
+            template_name: 'Test template1'
+            template_groups: '{{ zbx_host_groups }}'
+            link_templates:
+              - '{{ zbx_icmp_template[zbx_version] }}'
+            state: present
+          register: _template
+          tags:
+            - templates
+
+        - debug:
+            msg: '{{ _template }}'
+          tags:
+            - templates
+
+        - name: Create host in zabbix
+          zabbix_host:
+            server_url: '{{ zbx_server_url }}'
+            login_user: '{{ zbx_user }}'
+            login_password: '{{ zbx_password }}'
+            validate_certs: False
+            host_name: '{{ inventory_hostname }}'
+            host_groups: '{{ zbx_host_groups }}'
+            link_templates:
+              - 'Test template1'
+            status: enabled
+            state: present
+            interfaces:
+              - type: 1
+                main: 1
+                useip: 1
+                ip: '{{ ansible_default_ipv4.address }}'
+          register: _host
+          tags:
+            - hosts
+
+        - debug:
+            msg: '{{ _host }}'
+          tags:
+            - hosts
+
+        - name: Create host macros
+          zabbix_hostmacro:
+            server_url: '{{ zbx_server_url }}'
+            login_user: '{{ zbx_user }}'
+            login_password: '{{ zbx_password }}'
+            validate_certs: False
+            host_name: '{{ inventory_hostname }}'
+            macro_name: '{{ item.key }}'
+            macro_value: '{{ item.value }}'
+            state: present
+          loop: '{{ zbx_host_macros }}'
+          register: _macro
+          tags:
+            - hostmacros
+
+        - debug:
+            msg: '{{ _macro }}'
+          tags:
+            - hostmacros
+
+      delegate_to: localhost
