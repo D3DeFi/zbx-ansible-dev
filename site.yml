@@ -7,6 +7,51 @@
     zabbix_server_database: mysql
     zabbix_server_database_long: mysql
     zabbix_server_dbport: 3306
+    zabbix_apache_tls: True
+    zabbix_apache_redirect: True
+    zabbix_apache_SSLPassPhraseDialog: builtin
+    zabbix_apache_SSLSessionCache: none
+    zabbix_apache_SSLCryptoDevice: builtin
+    zabbix_apache_tls_crt: /etc/ssl/zabbix.pem
+    zabbix_apache_tls_key: /etc/ssl/zabbix.key
+
+  pre_tasks:
+    - name: Download get-pip.py installation script
+      get_url:
+        url: https://bootstrap.pypa.io/get-pip.py
+        dest: /tmp/get-pip.py
+        mode: 0755
+
+    - name: Install pip
+      command: python /tmp/get-pip.py
+
+    - name: Ensure system wide pyOpenSSL is not installed
+      apt:
+        name: python-openssl
+        state: absent
+
+    - name: Install pyOpenSSL
+      pip:
+        name: pyOpenSSL
+        state: latest
+      failed_when: False  # ignore version warnings, next task will fail withou pyOpenSSL anyways
+
+    - name: Generate an OpenSSL private key
+      openssl_privatekey:
+        path: /etc/ssl/zabbix.key
+
+    - name: Generate an OpenSSL CSR
+      openssl_csr:
+        path: /etc/ssl/zabbix.csr
+        privatekey_path: /etc/ssl/zabbix.key
+        common_name: "{{ ansible_host }}"
+
+    - name: Generate a Self Signed OpenSSL certificate
+      openssl_certificate:
+        path: /etc/ssl/zabbix.pem
+        privatekey_path: /etc/ssl/zabbix.key
+        csr_path: /etc/ssl/zabbix.csr
+        provider: selfsigned
 
   roles:
     - geerlingguy.mysql
