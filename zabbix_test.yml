@@ -1,6 +1,6 @@
 - hosts: all
   vars:
-    zbx_server_url: 'http://{{ ansible_host }}'
+    zbx_server_url: 'https://{{ ansible_host }}'
     zbx_user: 'Admin'
     zbx_password: 'zabbix'
 
@@ -15,7 +15,7 @@
       - 'Test hostgroup2'
 
     zbx_host_macros:
-      - key: LOW_SPACE_LIMIT
+      - key: LOW_SPACE_LIMIT:/home
         value: 10
 
   tasks:
@@ -26,8 +26,7 @@
             login_user: '{{ zbx_user }}'
             login_password: '{{ zbx_password }}'
             validate_certs: False
-            host_groups:
-              - '{{ zbx_host_groups }}'
+            host_groups: '{{ zbx_host_groups }}'
             state: present
           register: _host_group
           tags:
@@ -44,10 +43,15 @@
             login_user: '{{ zbx_user }}'
             login_password: '{{ zbx_password }}'
             validate_certs: False
-            template_name: 'Test template1'
+            template_name: Test template1
             template_groups: '{{ zbx_host_groups }}'
             link_templates:
               - '{{ zbx_icmp_template[zbx_version] }}'
+            macros:
+              - macro: '{$TEST}'
+                value: 1234
+              - macro: '{$TEST2}'
+                value: 'teeeest'
             state: present
           register: _template
           tags:

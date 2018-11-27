@@ -1,0 +1,229 @@
+- hosts: all
+  vars:
+    zbx_server_url: 'https://{{ ansible_host }}'
+    zbx_user: 'Admin'
+    zbx_password: 'zabbix'
+
+    zbx_icmp_template:
+      2.2: 'Template ICMP Ping'
+      3.0: 'Template ICMP Ping'
+      4.0: 'Template Module ICMP Ping'
+
+  tasks:
+    - block:
+        - name: Create template 00_temp1 new
+          zabbix_template:
+            server_url: '{{ zbx_server_url }}'
+            login_user: '{{ zbx_user }}'
+            login_password: '{{ zbx_password }}'
+            validate_certs: False
+            template_name: 00_temp1
+            template_groups: Templates
+          register: res
+
+        - assert:
+            that:
+              - "res.changed == True"
+
+        - name: Create template 00_temp1 existing
+          zabbix_template:
+            server_url: '{{ zbx_server_url }}'
+            login_user: '{{ zbx_user }}'
+            login_password: '{{ zbx_password }}'
+            validate_certs: False
+            template_name: 00_temp1
+            template_groups: Templates
+          register: res
+
+        - assert:
+            that:
+              - "res.changed == False"
+
+        - name: Create template 00_temp2 new
+          zabbix_template:
+            server_url: '{{ zbx_server_url }}'
+            login_user: '{{ zbx_user }}'
+            login_password: '{{ zbx_password }}'
+            validate_certs: False
+            template_name: 00_temp2
+            template_groups: Templates
+            template_json:
+              zabbix_export:
+                templates:
+                  - template: 00_temp2
+                    name: 00_temp2
+                    templates:
+                      - name: '{{ zbx_icmp_template[zbx_version] }}'
+                    groups:
+                      - name: 'Templates'
+                    macros:
+                      - macro: '{$TEST}'
+                        value: '1234'
+                      - macro: '{$TEST2}'
+                        value: 'mystr'
+                version: '2.0'
+          register: res
+
+        - assert:
+            that:
+              - "res.changed == True"
+
+        - name: Create template 00_temp2 existing
+          zabbix_template:
+            server_url: '{{ zbx_server_url }}'
+            login_user: '{{ zbx_user }}'
+            login_password: '{{ zbx_password }}'
+            validate_certs: False
+            template_name: 00_temp2
+            template_groups: Templates
+            template_json:
+              zabbix_export:
+                templates:
+                  - template: 00_temp2
+                    name: 00_temp2
+                    templates:
+                      - name: '{{ zbx_icmp_template[zbx_version] }}'
+                    groups:
+                      - name: 'Templates'
+                    macros:
+                      - macro: '{$TEST}'
+                        value: '1234'
+                      - macro: '{$TEST2}'
+                        value: 'mystr'
+                version: '2.0'
+          register: res
+
+        - assert:
+            that:
+              - "res.changed == False"
+
+        - name: Create template 00_temp2 changed
+          zabbix_template:
+            server_url: '{{ zbx_server_url }}'
+            login_user: '{{ zbx_user }}'
+            login_password: '{{ zbx_password }}'
+            validate_certs: False
+            template_name: 00_temp2
+            template_groups: Templates
+            template_json:
+              zabbix_export:
+                templates:
+                  - template: 00_temp2
+                    name: 00_temp2
+                    templates:
+                      - name: '{{ zbx_icmp_template[zbx_version] }}'
+                    groups:
+                      - name: 'Templates'
+                    macros:
+                      - macro: '{$TEST}'
+                        value: '12345'
+                      - macro: '{$TEST2}'
+                        value: 'mystr'
+                version: '2.0'
+          register: res
+
+        - assert:
+            that:
+              - "res.changed == True"
+
+        - name: Create template 00_temp3 new
+          zabbix_template:
+            server_url: '{{ zbx_server_url }}'
+            login_user: '{{ zbx_user }}'
+            login_password: '{{ zbx_password }}'
+            validate_certs: False
+            template_name: 00_temp3
+            template_groups: Templates
+            link_templates:
+              - '{{ zbx_icmp_template[zbx_version] }}'
+            macros:
+              - macro: '{$TEST}'
+                value: '123'
+          register: res
+
+        - assert:
+            that:
+              - "res.changed == True"
+
+        - name: Create template 00_temp3 existing
+          zabbix_template:
+            server_url: '{{ zbx_server_url }}'
+            login_user: '{{ zbx_user }}'
+            login_password: '{{ zbx_password }}'
+            validate_certs: False
+            template_name: 00_temp3
+            template_groups: Templates
+            link_templates:
+              - '{{ zbx_icmp_template[zbx_version] }}'
+            macros:
+              - macro: '{$TEST}'
+                value: '123'
+          register: res
+
+        - assert:
+            that:
+              - "res.changed == False"
+
+        - name: Remove template 00_temp1 existing
+          zabbix_template:
+            server_url: '{{ zbx_server_url }}'
+            login_user: '{{ zbx_user }}'
+            login_password: '{{ zbx_password }}'
+            validate_certs: False
+            template_name: 00_temp1
+            state: absent
+          register: res
+          tags:
+            - cleanup
+
+        - assert:
+            that:
+              - "res.changed == True"
+
+        - name: Remove template 00_temp2 existing
+          zabbix_template:
+            server_url: '{{ zbx_server_url }}'
+            login_user: '{{ zbx_user }}'
+            login_password: '{{ zbx_password }}'
+            validate_certs: False
+            template_name: 00_temp2
+            state: absent
+          register: res
+          tags:
+            - cleanup
+
+        - assert:
+            that:
+              - "res.changed == True"
+
+        - name: Remove template 00_temp2 non existing
+          zabbix_template:
+            server_url: '{{ zbx_server_url }}'
+            login_user: '{{ zbx_user }}'
+            login_password: '{{ zbx_password }}'
+            validate_certs: False
+            template_name: 00_temp1
+            state: absent
+          register: res
+
+        - assert:
+            that:
+              - "res.changed == False"
+
+        - name: Remove template 00_temp3 existing
+          zabbix_template:
+            server_url: '{{ zbx_server_url }}'
+            login_user: '{{ zbx_user }}'
+            login_password: '{{ zbx_password }}'
+            validate_certs: False
+            template_name: 00_temp3
+            state: absent
+          register: res
+          tags:
+            - cleanup
+
+        - assert:
+            that:
+              - "res.changed == True"
+
+      delegate_to: localhost
