@@ -1,0 +1,118 @@
+- hosts: all
+  vars:
+    zbx_server_url: 'https://{{ ansible_host }}'
+    zbx_user: 'Admin'
+    zbx_password: 'zabbix'
+
+  tasks:
+    - block:
+      - name: Deploy trigger action (new)
+        zabbix_action:
+          server_url: '{{ zbx_server_url }}'
+          login_user: '{{ zbx_user }}'
+          login_password: '{{ zbx_password }}'
+          validate_certs: False
+          name: "Send alerts to Admin"
+          event_source: 'trigger'
+          state: present
+          status: enabled
+          conditions:
+            - type: 'trigger_severity'
+              operator: '>='
+              value: 'Information'
+          operations:
+            - type: send_message
+              subject: "Something bad is happening"
+              message: "Come on, guys do something"
+              media_type: 'Email'
+              send_to_users:
+                - 'Admin'
+          recovery_operations:
+            - type: send_message
+              subject: "Host is down"
+              message: "Come on, guys do something"
+              media_type: 'Email'
+              send_to_users:
+                - 'Admin'
+          acknowledge_operations:
+            - type: send_message
+              media_type: 'Email'
+              send_to_users:
+                - 'Admin'
+        register: result
+
+      - assert:
+          that:
+            - "result.changed"
+        ignore_errors: True
+
+      - name: Deploy trigger action (existing)
+        zabbix_action:
+          server_url: '{{ zbx_server_url }}'
+          login_user: '{{ zbx_user }}'
+          login_password: '{{ zbx_password }}'
+          validate_certs: False
+          name: "Send alerts to Admin"
+          event_source: 'trigger'
+          state: present
+          status: enabled
+          conditions:
+            - type: 'trigger_severity'
+              operator: '>='
+              value: 'Information'
+          operations:
+            - type: send_message
+              subject: "Something bad is happening"
+              message: "Come on, guys do something"
+              media_type: 'Email'
+              send_to_users:
+                - 'Admin'
+          recovery_operations:
+            - type: send_message
+              subject: "Host is down"
+              message: "Come on, guys do something"
+              media_type: 'Email'
+              send_to_users:
+                - 'Admin'
+          acknowledge_operations:
+            - type: send_message
+              media_type: 'Email'
+              send_to_users:
+                - 'Admin'
+        register: result
+
+      - assert:
+          that:
+            - "not result.changed"
+        ignore_errors: True
+
+      - name: Deploy trigger action (remove rec&ack)
+        zabbix_action:
+          server_url: '{{ zbx_server_url }}'
+          login_user: '{{ zbx_user }}'
+          login_password: '{{ zbx_password }}'
+          validate_certs: False
+          name: "Send alerts to Admin"
+          event_source: 'trigger'
+          state: present
+          status: enabled
+          conditions:
+            - type: 'trigger_severity'
+              operator: '>='
+              value: 'Information'
+          operations:
+            - type: send_message
+              subject: "Something bad is happening"
+              message: "Come on, guys do something"
+              media_type: 'Email'
+              send_to_users:
+                - 'Admin'
+        register: result
+
+      - assert:
+          that:
+            - "result.changed"
+        ignore_errors: True
+
+      delegate_to: localhost
+      when: zbx_version|int >= 3.4
