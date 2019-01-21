@@ -6,7 +6,7 @@
 
     zbx_icmp_template:
       3.0: 'Template ICMP Ping'
-      3.4: 'Template ICMP Ping'
+      3.4: 'Template Module ICMP Ping'
       4.0: 'Template Module ICMP Ping'
 
   tasks:
@@ -52,6 +52,7 @@
                 templates:
                   - template: 00_temp2
                     name: 00_temp2
+                    description: '2nd testing template'
                     templates:
                       - name: '{{ zbx_icmp_template[zbx_version] }}'
                     groups:
@@ -81,6 +82,7 @@
                 templates:
                   - template: 00_temp2
                     name: 00_temp2
+                    description: '2nd testing template'
                     templates:
                       - name: '{{ zbx_icmp_template[zbx_version] }}'
                     groups:
@@ -110,6 +112,7 @@
                 templates:
                   - template: 00_temp2
                     name: 00_temp2
+                    description: '2nd testing template'
                     templates:
                       - name: '{{ zbx_icmp_template[zbx_version] }}'
                     groups:
