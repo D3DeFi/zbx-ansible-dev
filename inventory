@@ -1,6 +1,6 @@
 [zbx-dev-nodes]
 # Testing servers will run LTS releases of Zabbix server
 # terraform creates host_vars/ files for these hosts with ansible_host directive
-zbx-dev-node001 zbx_version=2.2
-zbx-dev-node002 zbx_version=3.0
+zbx-dev-node001 zbx_version=3.0
+zbx-dev-node002 zbx_version=3.4
 zbx-dev-node003 zbx_version=4.0

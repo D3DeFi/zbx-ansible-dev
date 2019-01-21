@@ -5,8 +5,8 @@
     zbx_password: 'zabbix'
 
     zbx_icmp_template:
-      2.2: 'Template ICMP Ping'
       3.0: 'Template ICMP Ping'
+      3.4: 'Template ICMP Ping'
       4.0: 'Template Module ICMP Ping'
 
   tasks:
@@ -61,7 +61,7 @@
                         value: '1234'
                       - macro: '{$TEST2}'
                         value: 'mystr'
-                version: '2.0'
+                version: '3.0'
           register: res
 
         - assert:
@@ -90,7 +90,7 @@
                         value: '1234'
                       - macro: '{$TEST2}'
                         value: 'mystr'
-                version: '2.0'
+                version: '3.0'
           register: res
 
         - assert:
@@ -119,7 +119,7 @@
                         value: '12345'
                       - macro: '{$TEST2}'
                         value: 'mystr'
-                version: '2.0'
+                version: '3.0'
           register: res
 
         - assert:

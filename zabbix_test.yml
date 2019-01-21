@@ -5,8 +5,8 @@
     zbx_password: 'zabbix'
 
     zbx_icmp_template:
-      2.2: 'Template ICMP Ping'
       3.0: 'Template ICMP Ping'
+      3.4: 'Template ICMP Ping'
       4.0: 'Template Module ICMP Ping'
 
     zbx_host_groups:
