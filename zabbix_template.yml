@@ -167,6 +167,90 @@
             that:
               - "res.changed == False"
 
+        - name: Create template 00_temp4 new
+          zabbix_template:
+            server_url: '{{ zbx_server_url }}'
+            login_user: '{{ zbx_user }}'
+            login_password: '{{ zbx_password }}'
+            validate_certs: False
+            template_json:
+              zabbix_export:
+                templates:
+                  - template: 00_temp4
+                    name: 00_temp4
+                    description: '4th testing template'
+                    templates:
+                      - name: '{{ zbx_icmp_template[zbx_version] }}'
+                    groups:
+                      - name: 'Templates'
+                    macros:
+                      - macro: '{$TEST}'
+                        value: '12345'
+                      - macro: '{$TEST2}'
+                        value: 'mystr'
+                version: '3.0'
+          register: res
+
+        - assert:
+            that:
+              - "res.changed == True"
+
+        - name: Create template 00_temp4 existing
+          zabbix_template:
+            server_url: '{{ zbx_server_url }}'
+            login_user: '{{ zbx_user }}'
+            login_password: '{{ zbx_password }}'
+            validate_certs: False
+            template_json:
+              zabbix_export:
+                templates:
+                  - template: 00_temp4
+                    name: 00_temp4
+                    description: '4th testing template'
+                    templates:
+                      - name: '{{ zbx_icmp_template[zbx_version] }}'
+                    groups:
+                      - name: 'Templates'
+                    macros:
+                      - macro: '{$TEST}'
+                        value: '12345'
+                      - macro: '{$TEST2}'
+                        value: 'mystr'
+                version: '3.0'
+          register: res
+
+        - assert:
+            that:
+              - "res.changed == False"
+
+        - name: Dump templates
+          zabbix_template:
+            server_url: '{{ zbx_server_url }}'
+            login_user: '{{ zbx_user }}'
+            login_password: '{{ zbx_password }}'
+            validate_certs: False
+            template_name: '{{ item }}'
+            state: dump
+          loop:
+            - 00_temp1
+            - 00_temp2
+            - 00_temp3
+            - 00_temp4
+
+        - name: Create template 00_temp5 fail
+          zabbix_template:
+            server_url: '{{ zbx_server_url }}'
+            login_user: '{{ zbx_user }}'
+            login_password: '{{ zbx_password }}'
+            validate_certs: False
+            template_name: 00_temp5
+          register: res
+          ignore_errors: True
+
+        - assert:
+            that:
+              - "res.failed == True"
+
         - name: Remove template 00_temp1 existing
           zabbix_template:
             server_url: '{{ zbx_server_url }}'
@@ -220,6 +304,22 @@
             login_password: '{{ zbx_password }}'
             validate_certs: False
             template_name: 00_temp3
+            state: absent
+          register: res
+          tags:
+            - cleanup
+
+        - assert:
+            that:
+              - "res.changed == True"
+
+        - name: Remove template 00_temp4 existing
+          zabbix_template:
+            server_url: '{{ zbx_server_url }}'
+            login_user: '{{ zbx_user }}'
+            login_password: '{{ zbx_password }}'
+            validate_certs: False
+            template_name: 00_temp4
             state: absent
           register: res
           tags:
