@@ -1,0 +1,77 @@
+---
+- hosts: all
+  name: Run various tests with zabbix_group and zabbix_group_facts modules
+  vars:
+    test_zabbix_group_name: 00-zbx-ansible-grp
+
+  tasks:
+    - block:
+        - name: Create hostgroup in Zabbix (new)
+          zabbix_group:
+            server_url: '{{ zbx_server_url }}'
+            login_user: '{{ zbx_user }}'
+            login_password: '{{ zbx_password }}'
+            validate_certs: '{{ zbx_validate_certs }}'
+            host_groups: '{{ test_zabbix_group_name }}'
+            state: present
+          register: _host_group_new
+
+        - assert:
+            that: _host_group_new.changed
+
+        - name: Create hostgroup in Zabbix (existing)
+          zabbix_group:
+            server_url: '{{ zbx_server_url }}'
+            login_user: '{{ zbx_user }}'
+            login_password: '{{ zbx_password }}'
+            validate_certs: '{{ zbx_validate_certs }}'
+            host_groups: '{{ test_zabbix_group_name }}'
+            state: present
+          register: _host_group_existing
+
+        - assert:
+            that: not _host_group_existing.changed
+
+        - name: Retreive facts about newly created group
+          zabbix_group_facts:
+            server_url: '{{ zbx_server_url }}'
+            login_user: '{{ zbx_user }}'
+            login_password: '{{ zbx_password }}'
+            validate_certs: '{{ zbx_validate_certs }}'
+            hostgroup_name: '{{ test_zabbix_group_name }}'
+          register: _host_group_facts
+
+        - assert:
+            that:
+              - _host_group_facts.host_groups[0].name == test_zabbix_group_name
+              - _host_group_facts.host_groups[0].groupid|int > 0
+
+        - name: Delete hostgroup in Zabbix (existing)
+          zabbix_group:
+            server_url: '{{ zbx_server_url }}'
+            login_user: '{{ zbx_user }}'
+            login_password: '{{ zbx_password }}'
+            validate_certs: '{{ zbx_validate_certs }}'
+            host_groups: '{{ test_zabbix_group_name }}'
+            state: absent
+          register: _host_group_existing_del
+          tags:
+            - cleanup
+
+        - assert:
+            that: _host_group_existing_del.changed
+
+        - name: Delete hostgroup in Zabbix (missing)
+          zabbix_group:
+            server_url: '{{ zbx_server_url }}'
+            login_user: '{{ zbx_user }}'
+            login_password: '{{ zbx_password }}'
+            validate_certs: '{{ zbx_validate_certs }}'
+            host_groups: '{{ test_zabbix_group_name }}'
+            state: absent
+          register: _host_group_missing_del
+
+        - assert:
+            that: not _host_group_missing_del.changed
+
+      delegate_to: localhost
