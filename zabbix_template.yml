@@ -1,14 +1,4 @@
 - hosts: all
-  vars:
-    zbx_server_url: 'https://{{ ansible_host }}'
-    zbx_user: 'Admin'
-    zbx_password: 'zabbix'
-
-    zbx_icmp_template:
-      3.0: 'Template ICMP Ping'
-      3.4: 'Template Module ICMP Ping'
-      4.0: 'Template Module ICMP Ping'
-
   tasks:
     - block:
         - name: Create template 00_temp1 new
@@ -16,7 +6,7 @@
             server_url: '{{ zbx_server_url }}'
             login_user: '{{ zbx_user }}'
             login_password: '{{ zbx_password }}'
-            validate_certs: False
+            validate_certs: '{{ zbx_validate_certs }}'
             template_name: 00_temp1
             template_groups: Templates
           register: res
@@ -30,7 +20,7 @@
             server_url: '{{ zbx_server_url }}'
             login_user: '{{ zbx_user }}'
             login_password: '{{ zbx_password }}'
-            validate_certs: False
+            validate_certs: '{{ zbx_validate_certs }}'
             template_name: 00_temp1
             template_groups: Templates
           register: res
@@ -44,7 +34,7 @@
             server_url: '{{ zbx_server_url }}'
             login_user: '{{ zbx_user }}'
             login_password: '{{ zbx_password }}'
-            validate_certs: False
+            validate_certs: '{{ zbx_validate_certs }}'
             template_name: 00_temp2
             template_groups: Templates
             template_json:
@@ -54,7 +44,7 @@
                     name: 00_temp2
                     description: '2nd testing template'
                     templates:
-                      - name: '{{ zbx_icmp_template[zbx_version] }}'
+                      - name: '{{ zbx_icmp_template }}'
                     groups:
                       - name: 'Templates'
                     macros:
@@ -74,7 +64,7 @@
             server_url: '{{ zbx_server_url }}'
             login_user: '{{ zbx_user }}'
             login_password: '{{ zbx_password }}'
-            validate_certs: False
+            validate_certs: '{{ zbx_validate_certs }}'
             template_name: 00_temp2
             template_groups: Templates
             template_json:
@@ -84,7 +74,7 @@
                     name: 00_temp2
                     description: '2nd testing template'
                     templates:
-                      - name: '{{ zbx_icmp_template[zbx_version] }}'
+                      - name: '{{ zbx_icmp_template }}'
                     groups:
                       - name: 'Templates'
                     macros:
@@ -104,7 +94,7 @@
             server_url: '{{ zbx_server_url }}'
             login_user: '{{ zbx_user }}'
             login_password: '{{ zbx_password }}'
-            validate_certs: False
+            validate_certs: '{{ zbx_validate_certs }}'
             template_name: 00_temp2
             template_groups: Templates
             template_json:
@@ -114,7 +104,7 @@
                     name: 00_temp2
                     description: '2nd testing template'
                     templates:
-                      - name: '{{ zbx_icmp_template[zbx_version] }}'
+                      - name: '{{ zbx_icmp_template }}'
                     groups:
                       - name: 'Templates'
                     macros:
@@ -134,11 +124,11 @@
             server_url: '{{ zbx_server_url }}'
             login_user: '{{ zbx_user }}'
             login_password: '{{ zbx_password }}'
-            validate_certs: False
+            validate_certs: '{{ zbx_validate_certs }}'
             template_name: 00_temp3
             template_groups: Templates
             link_templates:
-              - '{{ zbx_icmp_template[zbx_version] }}'
+              - '{{ zbx_icmp_template }}'
             macros:
               - macro: '{$TEST}'
                 value: '123'
@@ -153,11 +143,11 @@
             server_url: '{{ zbx_server_url }}'
             login_user: '{{ zbx_user }}'
             login_password: '{{ zbx_password }}'
-            validate_certs: False
+            validate_certs: '{{ zbx_validate_certs }}'
             template_name: 00_temp3
             template_groups: Templates
             link_templates:
-              - '{{ zbx_icmp_template[zbx_version] }}'
+              - '{{ zbx_icmp_template }}'
             macros:
               - macro: '{$TEST}'
                 value: '123'
@@ -172,7 +162,7 @@
             server_url: '{{ zbx_server_url }}'
             login_user: '{{ zbx_user }}'
             login_password: '{{ zbx_password }}'
-            validate_certs: False
+            validate_certs: '{{ zbx_validate_certs }}'
             template_json:
               zabbix_export:
                 templates:
@@ -180,7 +170,7 @@
                     name: 00_temp4
                     description: '4th testing template'
                     templates:
-                      - name: '{{ zbx_icmp_template[zbx_version] }}'
+                      - name: '{{ zbx_icmp_template }}'
                     groups:
                       - name: 'Templates'
                     macros:
@@ -200,7 +190,7 @@
             server_url: '{{ zbx_server_url }}'
             login_user: '{{ zbx_user }}'
             login_password: '{{ zbx_password }}'
-            validate_certs: False
+            validate_certs: '{{ zbx_validate_certs }}'
             template_json:
               zabbix_export:
                 templates:
@@ -208,7 +198,7 @@
                     name: 00_temp4
                     description: '4th testing template'
                     templates:
-                      - name: '{{ zbx_icmp_template[zbx_version] }}'
+                      - name: '{{ zbx_icmp_template }}'
                     groups:
                       - name: 'Templates'
                     macros:
@@ -228,7 +218,7 @@
             server_url: '{{ zbx_server_url }}'
             login_user: '{{ zbx_user }}'
             login_password: '{{ zbx_password }}'
-            validate_certs: False
+            validate_certs: '{{ zbx_validate_certs }}'
             template_name: '{{ item }}'
             state: dump
           loop:
@@ -242,7 +232,7 @@
             server_url: '{{ zbx_server_url }}'
             login_user: '{{ zbx_user }}'
             login_password: '{{ zbx_password }}'
-            validate_certs: False
+            validate_certs: '{{ zbx_validate_certs }}'
             template_name: 00_temp5
           register: res
           ignore_errors: True
@@ -256,7 +246,7 @@
             server_url: '{{ zbx_server_url }}'
             login_user: '{{ zbx_user }}'
             login_password: '{{ zbx_password }}'
-            validate_certs: False
+            validate_certs: '{{ zbx_validate_certs }}'
             template_name: 00_temp1
             state: absent
           register: res
@@ -272,7 +262,7 @@
             server_url: '{{ zbx_server_url }}'
             login_user: '{{ zbx_user }}'
             login_password: '{{ zbx_password }}'
-            validate_certs: False
+            validate_certs: '{{ zbx_validate_certs }}'
             template_name: 00_temp2
             state: absent
           register: res
@@ -288,7 +278,7 @@
             server_url: '{{ zbx_server_url }}'
             login_user: '{{ zbx_user }}'
             login_password: '{{ zbx_password }}'
-            validate_certs: False
+            validate_certs: '{{ zbx_validate_certs }}'
             template_name: 00_temp1
             state: absent
           register: res
@@ -302,7 +292,7 @@
             server_url: '{{ zbx_server_url }}'
             login_user: '{{ zbx_user }}'
             login_password: '{{ zbx_password }}'
-            validate_certs: False
+            validate_certs: '{{ zbx_validate_certs }}'
             template_name: 00_temp3
             state: absent
           register: res
@@ -318,7 +308,7 @@
             server_url: '{{ zbx_server_url }}'
             login_user: '{{ zbx_user }}'
             login_password: '{{ zbx_password }}'
-            validate_certs: False
+            validate_certs: '{{ zbx_validate_certs }}'
             template_name: 00_temp4
             state: absent
           register: res

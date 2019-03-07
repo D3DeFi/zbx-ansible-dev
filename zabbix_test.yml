@@ -1,14 +1,5 @@
 - hosts: all
   vars:
-    zbx_server_url: 'https://{{ ansible_host }}'
-    zbx_user: 'Admin'
-    zbx_password: 'zabbix'
-
-    zbx_icmp_template:
-      3.0: 'Template ICMP Ping'
-      3.4: 'Template ICMP Ping'
-      4.0: 'Template Module ICMP Ping'
-
     zbx_host_groups:
       - 'Linux servers'
       - 'Test hostgroup1'
@@ -25,7 +16,7 @@
             server_url: '{{ zbx_server_url }}'
             login_user: '{{ zbx_user }}'
             login_password: '{{ zbx_password }}'
-            validate_certs: False
+            validate_certs: '{{ zbx_validate_certs }}'
             host_groups: '{{ zbx_host_groups }}'
             state: present
           register: _host_group
@@ -42,11 +33,11 @@
             server_url: '{{ zbx_server_url }}'
             login_user: '{{ zbx_user }}'
             login_password: '{{ zbx_password }}'
-            validate_certs: False
+            validate_certs: '{{ zbx_validate_certs }}'
             template_name: Test template1
             template_groups: '{{ zbx_host_groups }}'
             link_templates:
-              - '{{ zbx_icmp_template[zbx_version] }}'
+              - '{{ zbx_icmp_template }}'
             macros:
               - macro: '{$TEST}'
                 value: 1234
@@ -67,7 +58,7 @@
             server_url: '{{ zbx_server_url }}'
             login_user: '{{ zbx_user }}'
             login_password: '{{ zbx_password }}'
-            validate_certs: False
+            validate_certs: '{{ zbx_validate_certs }}'
             host_name: '{{ inventory_hostname }}'
             host_groups: '{{ zbx_host_groups }}'
             link_templates:
@@ -93,7 +84,7 @@
             server_url: '{{ zbx_server_url }}'
             login_user: '{{ zbx_user }}'
             login_password: '{{ zbx_password }}'
-            validate_certs: False
+            validate_certs: '{{ zbx_validate_certs }}'
             host_name: '{{ inventory_hostname }}'
             macro_name: '{{ item.key }}'
             macro_value: '{{ item.value }}'

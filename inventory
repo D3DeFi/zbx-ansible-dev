@@ -1,6 +1,16 @@
+[all:vars]
+# Login information for zabbix roles
+zbx_server_url = https://{{ ansible_host }}
+zbx_user = Admin
+zbx_password = zabbix
+zbx_validate_certs = False
+
+# Default values for playbooks
+zbx_icmp_template = Template Module ICMP Ping
+
 [zbx-dev-nodes]
 # Testing servers will run LTS releases of Zabbix server
 # terraform creates host_vars/ files for these hosts with ansible_host directive
-zbx-dev-node001 zbx_version=3.0
+zbx-dev-node001 zbx_version=3.0 zbx_icmp_template='Template ICMP Ping'
 zbx-dev-node002 zbx_version=3.4
 zbx-dev-node003 zbx_version=4.0
