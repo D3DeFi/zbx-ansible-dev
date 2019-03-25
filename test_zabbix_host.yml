@@ -1,68 +1,25 @@
 - hosts: all
-  vars:
-    zbx_host_groups:
-      - 'Linux servers'
-      - 'Test hostgroup1'
-      - 'Test hostgroup2'
-
-    zbx_host_macros:
-      - key: LOW_SPACE_LIMIT:/home
-        value: 10
-
+  name: Run various tests with zabbix_host and zabbix_host_facts modules
   tasks:
     - block:
-        - name: Create hostgroups in zabbix
+        - name: Create hostgroup in Zabbix (new)
           zabbix_group:
             server_url: '{{ zbx_server_url }}'
             login_user: '{{ zbx_user }}'
             login_password: '{{ zbx_password }}'
             validate_certs: '{{ zbx_validate_certs }}'
-            host_groups: '{{ zbx_host_groups }}'
+            host_groups: '{{ zbx_test_group_name }}'
             state: present
-          register: _host_group
-          tags:
-            - hostgroups
 
-        - debug:
-            msg: '{{ _host_group }}'
-          tags:
-            - hostgroups
-
-        - name: Create templates in zabbix
-          zabbix_template:
-            server_url: '{{ zbx_server_url }}'
-            login_user: '{{ zbx_user }}'
-            login_password: '{{ zbx_password }}'
-            validate_certs: '{{ zbx_validate_certs }}'
-            template_name: Test template1
-            template_groups: '{{ zbx_host_groups }}'
-            link_templates:
-              - '{{ zbx_icmp_template }}'
-            macros:
-              - macro: '{$TEST}'
-                value: 1234
-              - macro: '{$TEST2}'
-                value: 'teeeest'
-            state: present
-          register: _template
-          tags:
-            - templates
-
-        - debug:
-            msg: '{{ _template }}'
-          tags:
-            - templates
-
-        - name: Create host in zabbix
+        - name: Create host in Zabbix (new)
           zabbix_host:
             server_url: '{{ zbx_server_url }}'
             login_user: '{{ zbx_user }}'
             login_password: '{{ zbx_password }}'
             validate_certs: '{{ zbx_validate_certs }}'
             host_name: '{{ inventory_hostname }}'
-            host_groups: '{{ zbx_host_groups }}'
-            link_templates:
-              - 'Test template1'
+            host_groups: '{{ zbx_test_group_name }}'
+            link_templates: '{{ zbx_icmp_template }}'
             status: enabled
             state: present
             interfaces:
@@ -70,33 +27,72 @@
                 main: 1
                 useip: 1
                 ip: '{{ ansible_default_ipv4.address }}'
-          register: _host
-          tags:
-            - hosts
+          register: _host_new
 
-        - debug:
-            msg: '{{ _host }}'
-          tags:
-            - hosts
+        - assert:
+            that: _host_new.changed
 
-        - name: Create host macros
-          zabbix_hostmacro:
+        - name: Create host in Zabbix (existing)
+          zabbix_host:
             server_url: '{{ zbx_server_url }}'
             login_user: '{{ zbx_user }}'
             login_password: '{{ zbx_password }}'
             validate_certs: '{{ zbx_validate_certs }}'
             host_name: '{{ inventory_hostname }}'
-            macro_name: '{{ item.key }}'
-            macro_value: '{{ item.value }}'
+            host_groups: '{{ zbx_test_group_name }}'
+            link_templates: '{{ zbx_icmp_template }}'
+            status: enabled
             state: present
-          loop: '{{ zbx_host_macros }}'
-          register: _macro
-          tags:
-            - hostmacros
+            interfaces:
+              - type: 1
+                main: 1
+                useip: 1
+                ip: '{{ ansible_default_ipv4.address }}'
+          register: _host_existing
 
-        - debug:
-            msg: '{{ _macro }}'
+        - assert:
+            that: not _host_existing.changed
+
+        - name: Retreive facts about newly created host
+          zabbix_host_facts:
+            server_url: '{{ zbx_server_url }}'
+            login_user: '{{ zbx_user }}'
+            login_password: '{{ zbx_password }}'
+            validate_certs: '{{ zbx_validate_certs }}'
+            host_name: '{{ inventory_hostname }}'
+          register: _host_facts
+
+        - assert:
+            that:
+              - _host_facts.hosts[0].host == inventory_hostname
+              - _host_facts.hosts[0].hostid|int > 0
+
+        - name: Delete host in Zabbix (existing)
+          zabbix_host:
+            server_url: '{{ zbx_server_url }}'
+            login_user: '{{ zbx_user }}'
+            login_password: '{{ zbx_password }}'
+            validate_certs: '{{ zbx_validate_certs }}'
+            host_name: '{{ inventory_hostname }}'
+            state: absent
+          register: _host_existing_del
           tags:
-            - hostmacros
+            - cleanup
+
+        - assert:
+            that: _host_existing_del.changed
+
+        - name: Delete host in Zabbix (missing)
+          zabbix_host:
+            server_url: '{{ zbx_server_url }}'
+            login_user: '{{ zbx_user }}'
+            login_password: '{{ zbx_password }}'
+            validate_certs: '{{ zbx_validate_certs }}'
+            host_name: '{{ inventory_hostname }}'
+            state: absent
+          register: _host_missing_del
+
+        - assert:
+            that: not _host_missing_del.changed
 
       delegate_to: localhost
