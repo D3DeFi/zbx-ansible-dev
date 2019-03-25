@@ -1,4 +1,4 @@
-- hosts: zbx-dev-nodes
+- hosts: zbx_dev_nodes
   name: Configures hosts to run standalone zabbix-server installations with specified versions
   vars:
     mysql_bind_address: '127.0.0.1'

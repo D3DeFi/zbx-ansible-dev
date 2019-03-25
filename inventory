@@ -7,8 +7,9 @@ zbx_validate_certs = False
 
 # Default values for playbooks
 zbx_icmp_template = Template Module ICMP Ping
+zbx_test_group_name = 00-zbx-ansible-grp
 
-[zbx-dev-nodes]
+[zbx_dev_nodes]
 # Testing servers will run LTS releases of Zabbix server
 # terraform creates host_vars/ files for these hosts with ansible_host directive
 zbx-dev-node001 zbx_version=3.0 zbx_icmp_template='Template ICMP Ping'
