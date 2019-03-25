@@ -5,11 +5,7 @@ variable "do_token" {
 
 variable "do_image" {
     description = "Slug/image-id of distribution to install"
-    default     = {
-        "0" = "ubuntu-14-04-x64"  # zbx-2* requires ubuntu <= 14
-        "1" = "ubuntu-16-04-x64"
-        "2" = "ubuntu-16-04-x64"
-    }
+    default     = "ubuntu-16-04-x64"
 }
 
 variable "do_region" {
@@ -44,7 +40,7 @@ resource "digitalocean_tag" "zbx-dev" {
 
 resource "digitalocean_droplet" "zbx-dev" {
     count       = 3
-    image       = "${var.do_image[count.index]}"
+    image       = "${var.do_image}"
     name        = "zbx-dev-node00${count.index + 1}"
     region      = "${var.do_region}"
     size        = "${var.do_size}"
@@ -54,7 +50,7 @@ resource "digitalocean_droplet" "zbx-dev" {
     provisioner "remote-exec" {
         inline = [
             "sleep 5 && apt-get update",
-            "apt-get install -y python",
+            "apt-get install -y python python3",
         ]
 
         connection {

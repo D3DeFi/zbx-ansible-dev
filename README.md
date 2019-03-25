@@ -13,6 +13,7 @@ Prerequisities
     * python2.7+ or python3+
     * pip ([doc](https://pip.pypa.io/en/stable/installing/#installing-with-get-pip-py))
     * (optional) virtualenv (`pip install virtualenv`)
+    * (optional if using zabbix\_map) libtff-dev libjpeg-dev zlib-dev
 
 2. Create virtualenv (optional) and install requirements
 ```bash

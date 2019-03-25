@@ -1,0 +1,48 @@
+- hosts: all
+  tasks:
+    - block:
+      - name: Update host with SNMP interface and new template
+        zabbix_host:
+          server_url: '{{ zbx_server_url }}'
+          login_user: '{{ zbx_user }}'
+          login_password: '{{ zbx_password }}'
+          host_name: '{{ inventory_hostname }}'
+          visible_name: '{{ inventory_hostname }}'
+          validate_certs: '{{ zbx_validate_certs }}'
+          force: no
+          host_groups:
+            - Linux servers
+          link_templates:
+            - '{{ zbx_icmp_template }}'
+          status: enabled
+          state: present
+          inventory_mode: disabled
+          interfaces:
+            - type: 1
+              main: 1
+              useip: 0
+              ip: "{{ ansible_default_ipv4.address }}"
+              dns: "{{ inventory_hostname }}"
+              port: 10050
+            - type: 2
+              main: 1
+              useip: 1
+              ip: '{{ ansible_default_ipv4.address }}'
+              dns: "{{ inventory_hostname }}"
+              port: 161
+
+      - name: create zabbix map
+        zabbix_map:
+          server_url: '{{ zbx_server_url }}'
+          login_user: '{{ zbx_user }}'
+          login_password: '{{ zbx_password }}'
+          validate_certs: '{{ zbx_validate_certs }}'
+          name: ansible test
+          state: present
+          data: "{{ lookup('template', 'files/map.j2') }}"
+          default_image: Server_(64)
+          expand_problem: no
+          highlight: no
+          label_type: label
+
+      delegate_to: localhost

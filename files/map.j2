@@ -1,0 +1,9 @@
+digraph G {
+    graph [layout=dot splines=false overlap=scale]
+    INTERNET [zbx_url="Google:https://google.com" zbx_image="Cloud_(96)"]
+{% for zbx_host in groups.all %}
+    {% set zbx_loop = loop %}
+    zbx{{ '%03d' % zbx_loop.index }} [zbx_host="{{ zbx_host }}"]
+    INTERNET -> zbx{{ '%03d' % zbx_loop.index }} # [zbx_trigger="{{ zbx_host }}:Zabbix agent on {HOST.NAME} is unreachable for 5 minutes"]
+{% endfor %}
+}
