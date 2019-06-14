@@ -55,6 +55,7 @@ resource "digitalocean_droplet" "zbx-dev" {
 
         connection {
             type            = "ssh"
+            host            = "${self.ipv4_address}"
             user            = "root"
             agent           = "true"
             bastion_host    = "${var.do_bastion_host}"
