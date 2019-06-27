@@ -1,0 +1,71 @@
+- hosts: all
+  name: Run tests with zabbix_user_group module
+  tasks:
+    - block:
+        - name: Create Zabbix user group (new)
+          zabbix_user_group:
+            server_url: '{{ zbx_server_url }}'
+            login_user: '{{ zbx_user }}'
+            login_password: '{{ zbx_password }}'
+            validate_certs: '{{ zbx_validate_certs }}'
+            state: present
+            name: Test group
+            rights:
+              - host_group: Linux servers
+                permission: RW
+            users:
+              - Admin
+          register: zbx_group_new
+
+        - assert:
+            that: zbx_group_new.changed
+
+        - name: Create Zabbix user group (existing)
+          zabbix_user_group:
+            server_url: '{{ zbx_server_url }}'
+            login_user: '{{ zbx_user }}'
+            login_password: '{{ zbx_password }}'
+            validate_certs: '{{ zbx_validate_certs }}'
+            state: present
+            name: Test group
+            rights:
+              - host_group: Linux servers
+                permission: RW
+            users:
+              - Admin
+          register: zbx_group_existing
+
+        - assert:
+            that: not zbx_group_existing.changed
+
+        - name: Delete Zabbix user group (existing)
+          zabbix_user_group:
+            server_url: '{{ zbx_server_url }}'
+            login_user: '{{ zbx_user }}'
+            login_password: '{{ zbx_password }}'
+            validate_certs: '{{ zbx_validate_certs }}'
+            state: absent
+            name: Test group
+          register: zbx_group_del_existing
+          tags:
+            - cleanup
+
+        - assert:
+            that: zbx_group_del_existing.changed
+
+        - name: Delete Zabbix user group (non-existing)
+          zabbix_user_group:
+            server_url: '{{ zbx_server_url }}'
+            login_user: '{{ zbx_user }}'
+            login_password: '{{ zbx_password }}'
+            validate_certs: '{{ zbx_validate_certs }}'
+            state: absent
+            name: Test group
+          register: zbx_group_del_non_existing
+          tags:
+            - cleanup
+
+        - assert:
+            that: not zbx_group_del_non_existing.changed
+
+      delegate_to: localhost
