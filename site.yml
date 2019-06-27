@@ -23,18 +23,15 @@
         mode: 0755
 
     - name: Install pip
-      command: python /tmp/get-pip.py
+      command: python3 /tmp/get-pip.py
 
-    - name: Ensure system wide pyOpenSSL is not installed
-      apt:
-        name: python-openssl
-        state: absent
-
-    - name: Install pyOpenSSL
+    - name: Install required python packages
       pip:
-        name: pyOpenSSL
+        name: '{{ item }}'
         state: latest
-      failed_when: False  # ignore version warnings, next task will fail withou pyOpenSSL anyways
+      loop:
+        - pyOpenSSL
+        - PyMySQL
 
     - name: Generate an OpenSSL private key
       openssl_privatekey:

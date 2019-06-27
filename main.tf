@@ -49,8 +49,9 @@ resource "digitalocean_droplet" "zbx-dev" {
 
     provisioner "remote-exec" {
         inline = [
-            "sleep 5 && apt-get update",
-            "apt-get install -y python python3",
+            "sleep 5",
+            "apt -q update",
+            "apt install -y python3",
         ]
 
         connection {
