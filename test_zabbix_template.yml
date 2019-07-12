@@ -118,6 +118,38 @@
             that:
               - "res.changed == True"
 
+        - name: Unlink ICMP template from 00_temp2 template
+          zabbix_template:
+            server_url: '{{ zbx_server_url }}'
+            login_user: '{{ zbx_user }}'
+            login_password: '{{ zbx_password }}'
+            validate_certs: '{{ zbx_validate_certs }}'
+            state: present
+            template_name: 00_temp2
+            clear_templates:
+              - '{{ zbx_icmp_template }}'
+          register: res
+
+        - assert:
+            that:
+              - "res.changed == True"
+
+        - name: Unlink ICMP template from 00_temp2 template (already missing)
+          zabbix_template:
+            server_url: '{{ zbx_server_url }}'
+            login_user: '{{ zbx_user }}'
+            login_password: '{{ zbx_password }}'
+            validate_certs: '{{ zbx_validate_certs }}'
+            state: present
+            template_name: 00_temp2
+            clear_templates:
+              - '{{ zbx_icmp_template }}'
+          register: res
+
+        - assert:
+            that:
+              - "res.changed == False"
+
         - name: Create template 00_temp3 new
           zabbix_template:
             server_url: '{{ zbx_server_url }}'
