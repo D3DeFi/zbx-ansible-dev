@@ -9,6 +9,7 @@
             validate_certs: '{{ zbx_validate_certs }}'
             template_name: 00_temp1
             template_groups: Templates
+            state: present
           register: res
 
         - assert:
@@ -23,6 +24,7 @@
             validate_certs: '{{ zbx_validate_certs }}'
             template_name: 00_temp1
             template_groups: Templates
+            state: present
           register: res
 
         - assert:
@@ -35,8 +37,6 @@
             login_user: '{{ zbx_user }}'
             login_password: '{{ zbx_password }}'
             validate_certs: '{{ zbx_validate_certs }}'
-            template_name: 00_temp2
-            template_groups: Templates
             template_json:
               zabbix_export:
                 templates:
@@ -53,6 +53,7 @@
                       - macro: '{$TEST2}'
                         value: 'mystr'
                 version: '3.0'
+            state: present
           register: res
 
         - assert:
@@ -65,8 +66,6 @@
             login_user: '{{ zbx_user }}'
             login_password: '{{ zbx_password }}'
             validate_certs: '{{ zbx_validate_certs }}'
-            template_name: 00_temp2
-            template_groups: Templates
             template_json:
               zabbix_export:
                 templates:
@@ -83,6 +82,7 @@
                       - macro: '{$TEST2}'
                         value: 'mystr'
                 version: '3.0'
+            state: present
           register: res
 
         - assert:
@@ -95,8 +95,6 @@
             login_user: '{{ zbx_user }}'
             login_password: '{{ zbx_password }}'
             validate_certs: '{{ zbx_validate_certs }}'
-            template_name: 00_temp2
-            template_groups: Templates
             template_json:
               zabbix_export:
                 templates:
@@ -113,6 +111,7 @@
                       - macro: '{$TEST2}'
                         value: 'mystr'
                 version: '3.0'
+            state: present
           register: res
 
         - assert:
@@ -132,6 +131,7 @@
             macros:
               - macro: '{$TEST}'
                 value: '123'
+            state: present
           register: res
 
         - assert:
@@ -151,6 +151,7 @@
             macros:
               - macro: '{$TEST}'
                 value: '123'
+            state: present
           register: res
 
         - assert:
@@ -179,6 +180,7 @@
                       - macro: '{$TEST2}'
                         value: 'mystr'
                 version: '3.0'
+            state: present
           register: res
 
         - assert:
@@ -207,25 +209,31 @@
                       - macro: '{$TEST2}'
                         value: 'mystr'
                 version: '3.0'
+            state: present
           register: res
 
         - assert:
             that:
               - "res.changed == False"
 
-        - name: Dump templates
+        - name: Dump template JSON
           zabbix_template:
             server_url: '{{ zbx_server_url }}'
             login_user: '{{ zbx_user }}'
             login_password: '{{ zbx_password }}'
             validate_certs: '{{ zbx_validate_certs }}'
-            template_name: '{{ item }}'
+            template_name: 00_temp3
             state: dump
-          loop:
-            - 00_temp1
-            - 00_temp2
-            - 00_temp3
-            - 00_temp4
+
+        - name: Dump templates XML
+          zabbix_template:
+            server_url: '{{ zbx_server_url }}'
+            login_user: '{{ zbx_user }}'
+            login_password: '{{ zbx_password }}'
+            validate_certs: '{{ zbx_validate_certs }}'
+            template_name: 00_temp3
+            dump_format: xml
+            state: dump
 
         - name: Create template 00_temp5 fail
           zabbix_template:
@@ -234,12 +242,182 @@
             login_password: '{{ zbx_password }}'
             validate_certs: '{{ zbx_validate_certs }}'
             template_name: 00_temp5
+            state: present
           register: res
           ignore_errors: True
 
         - assert:
             that:
               - "res.failed == True"
+
+        - name: Create template 00_temp6 from JSON file (new)
+          zabbix_template:
+            server_url: '{{ zbx_server_url }}'
+            login_user: '{{ zbx_user }}'
+            login_password: '{{ zbx_password }}'
+            validate_certs: '{{ zbx_validate_certs }}'
+            template_json: "{{ lookup('file', 'files/00_temp6.json') }}"
+            state: present
+          register: res
+
+        - assert:
+            that:
+              - "res.changed == True"
+
+        - name: Create template 00_temp6 from JSON file (existing)
+          zabbix_template:
+            server_url: '{{ zbx_server_url }}'
+            login_user: '{{ zbx_user }}'
+            login_password: '{{ zbx_password }}'
+            validate_certs: '{{ zbx_validate_certs }}'
+            template_json: "{{ lookup('file', 'files/00_temp6.json') }}"
+            state: present
+          register: res
+
+        - assert:
+            that:
+              - "res.changed == False"
+
+        - name: Create template 00_temp6 from JSON file (altered)
+          zabbix_template:
+            server_url: '{{ zbx_server_url }}'
+            login_user: '{{ zbx_user }}'
+            login_password: '{{ zbx_password }}'
+            validate_certs: '{{ zbx_validate_certs }}'
+            template_json: "{{ lookup('file', 'files/00_temp6_altered.json') }}"
+            state: present
+          register: res
+
+        - assert:
+            that:
+              - "res.changed == True"
+
+        - name: Create template 00_temp7 from XML file (new)
+          zabbix_template:
+            server_url: '{{ zbx_server_url }}'
+            login_user: '{{ zbx_user }}'
+            login_password: '{{ zbx_password }}'
+            validate_certs: '{{ zbx_validate_certs }}'
+            template_xml: "{{ lookup('file', 'files/00_temp7.xml' ) }}"
+            state: present
+          register: res
+          tags:
+            - xml_support
+
+        - assert:
+            that:
+              - "res.changed == True"
+          tags:
+            - xml_support
+
+        - name: Create template 00_temp7 from XML file (existing)
+          zabbix_template:
+            server_url: '{{ zbx_server_url }}'
+            login_user: '{{ zbx_user }}'
+            login_password: '{{ zbx_password }}'
+            validate_certs: '{{ zbx_validate_certs }}'
+            template_xml: "{{ lookup('file', 'files/00_temp7.xml' ) }}"
+            state: present
+          register: res
+          tags:
+            - xml_support
+
+        - assert:
+            that:
+              - "res.changed == False"
+          tags:
+            - xml_support
+
+        - name: Create template 00_temp7 from XML file (altered)
+          zabbix_template:
+            server_url: '{{ zbx_server_url }}'
+            login_user: '{{ zbx_user }}'
+            login_password: '{{ zbx_password }}'
+            validate_certs: '{{ zbx_validate_certs }}'
+            template_xml: "{{ lookup('file', 'files/00_temp7_altered.xml' ) }}"
+            state: present
+          register: res
+          tags:
+            - xml_support
+
+        - assert:
+            that:
+              - "res.changed == True"
+          tags:
+            - xml_support
+
+        - name: Test creation of multiple templates at once
+          block:
+            - name: Create multiple templates from JSON (new)
+              zabbix_template:
+                server_url: '{{ zbx_server_url }}'
+                login_user: '{{ zbx_user }}'
+                login_password: '{{ zbx_password }}'
+                validate_certs: '{{ zbx_validate_certs }}'
+                template_json: "{{ lookup('file', 'files/multiple_templates.json' ) }}"
+                state: present
+              register: res
+
+            - assert:
+                that:
+                  - "res.changed == True"
+
+            - name: Create multiple templates from JSON (existing)
+              zabbix_template:
+                server_url: '{{ zbx_server_url }}'
+                login_user: '{{ zbx_user }}'
+                login_password: '{{ zbx_password }}'
+                validate_certs: '{{ zbx_validate_certs }}'
+                template_json: "{{ lookup('file', 'files/multiple_templates.json' ) }}"
+                state: present
+              register: res
+
+            - assert:
+                that:
+                  - "res.changed == False"
+
+            - name: Remove those templates
+              zabbix_template:
+                server_url: '{{ zbx_server_url }}'
+                login_user: '{{ zbx_user }}'
+                login_password: '{{ zbx_password }}'
+                validate_certs: '{{ zbx_validate_certs }}'
+                template_name: '{{ item }}'
+                state: absent
+              loop:
+                - 00_temp8
+                - 00_temp9
+                - 00_temp10
+
+            - name: Create multiple templates from XML (new)
+              zabbix_template:
+                server_url: '{{ zbx_server_url }}'
+                login_user: '{{ zbx_user }}'
+                login_password: '{{ zbx_password }}'
+                validate_certs: '{{ zbx_validate_certs }}'
+                template_xml: "{{ lookup('file', 'files/multiple_templates.xml' ) }}"
+                state: present
+              register: res
+
+            - assert:
+                that:
+                  - "res.changed == True"
+
+            - name: Create multiple templates from XML (existing)
+              zabbix_template:
+                server_url: '{{ zbx_server_url }}'
+                login_user: '{{ zbx_user }}'
+                login_password: '{{ zbx_password }}'
+                validate_certs: '{{ zbx_validate_certs }}'
+                template_xml: "{{ lookup('file', 'files/multiple_templates.xml' ) }}"
+                state: present
+              register: res
+
+            - assert:
+                that:
+                  - "res.changed == False"
+
+          when: zbx_version >= 4.0
 
         - name: Remove template 00_temp1 existing
           zabbix_template:
@@ -287,30 +465,23 @@
             that:
               - "res.changed == False"
 
-        - name: Remove template 00_temp3 existing
+        - name: Remove rest of the templates (existing)
           zabbix_template:
             server_url: '{{ zbx_server_url }}'
             login_user: '{{ zbx_user }}'
             login_password: '{{ zbx_password }}'
             validate_certs: '{{ zbx_validate_certs }}'
-            template_name: 00_temp3
+            template_name: '{{ item }}'
             state: absent
-          register: res
-          tags:
-            - cleanup
+          loop:
+            - 00_temp3
+            - 00_temp4
+            - 00_temp6
+            - 00_temp7
+            - 00_temp8
+            - 00_temp9
+            - 00_temp10
 
-        - assert:
-            that:
-              - "res.changed == True"
-
-        - name: Remove template 00_temp4 existing
-          zabbix_template:
-            server_url: '{{ zbx_server_url }}'
-            login_user: '{{ zbx_user }}'
-            login_password: '{{ zbx_password }}'
-            validate_certs: '{{ zbx_validate_certs }}'
-            template_name: 00_temp4
-            state: absent
           register: res
           tags:
             - cleanup

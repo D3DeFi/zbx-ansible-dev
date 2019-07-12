@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>3.0</version>
+    <date>2019-07-12T08:49:17Z</date>
+    <groups>
+        <group>
+            <name>Linux servers</name>
+        </group>
+        <group>
+            <name>Templates</name>
+        </group>
+    </groups>
+    <templates>
+        <template>
+            <template>00_temp8</template>
+            <name>00_temp8</name>
+            <description/>
+            <groups>
+                <group>
+                    <name>Templates</name>
+                </group>
+            </groups>
+            <applications/>
+            <items/>
+            <discovery_rules/>
+            <macros>
+                <macro>
+                    <macro>{$TEST}</macro>
+                    <value>123</value>
+                </macro>
+            </macros>
+            <templates>
+                <template>
+                    <name>Template Module ICMP Ping</name>
+                </template>
+            </templates>
+            <screens/>
+        </template>
+        <template>
+            <template>00_temp9</template>
+            <name>00_temp9</name>
+            <description>4th testing template</description>
+            <groups>
+                <group>
+                    <name>Templates</name>
+                </group>
+            </groups>
+            <applications/>
+            <items/>
+            <discovery_rules/>
+            <macros>
+                <macro>
+                    <macro>{$TEST}</macro>
+                    <value>12345</value>
+                </macro>
+                <macro>
+                    <macro>{$TEST2}</macro>
+                    <value>mystr</value>
+                </macro>
+            </macros>
+            <templates>
+                <template>
+                    <name>Template Module ICMP Ping</name>
+                </template>
+            </templates>
+            <screens/>
+        </template>
+        <template>
+            <template>00_temp10</template>
+            <name>00_temp10</name>
+            <description>6th testing template - new desc</description>
+            <groups>
+                <group>
+                    <name>Linux servers</name>
+                </group>
+            </groups>
+            <applications/>
+            <items/>
+            <discovery_rules/>
+            <macros>
+                <macro>
+                    <macro>{$TEST}</macro>
+                    <value>12333</value>
+                </macro>
+                <macro>
+                    <macro>{$TEST2}</macro>
+                    <value>mystrnew</value>
+                </macro>
+            </macros>
+            <templates/>
+            <screens/>
+        </template>
+    </templates>
+</zabbix_export>

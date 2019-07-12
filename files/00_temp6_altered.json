@@ -1,0 +1,39 @@
+{
+  "zabbix_export" : {
+     "date" : "2019-07-11T11:15:11Z",
+     "templates" : [
+        {
+           "groups" : [
+              {
+                 "name" : "Templates",
+                 "name" : "Linux servers"
+              }
+           ],
+           "applications" : [],
+           "description" : "6th testing template - new desc",
+           "name" : "00_temp6",
+           "items" : [],
+           "macros" : [
+              {
+                 "value" : "12333",
+                 "macro" : "{$TEST}"
+              },
+              {
+                 "value" : "mystrnew",
+                 "macro" : "{$TEST2}"
+              }
+           ],
+           "template" : "00_temp6",
+           "discovery_rules" : [],
+           "screens" : []
+        }
+     ],
+     "version" : "3.0",
+     "groups" : [
+        {
+           "name" : "Templates",
+           "name" : "Linux servers"
+        }
+     ]
+  }
+}

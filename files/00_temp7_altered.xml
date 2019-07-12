@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>3.0</version>
+    <date>2019-07-11T11:15:11Z</date>
+    <groups>
+        <group>
+            <name>Templates</name>
+        </group>
+        <group>
+            <name>Linux servers</name>
+        </group>
+    </groups>
+    <templates>
+        <template>
+            <template>00_temp7</template>
+            <name>00_temp7</name>
+            <description>7th testing template - new desc</description>
+            <groups>
+                <group>
+                    <name>Templates</name>
+                </group>
+                <group>
+                    <name>Linux servers</name>
+                </group>
+            </groups>
+            <applications/>
+            <items/>
+            <discovery_rules/>
+            <macros>
+                <macro>
+                    <macro>{$TEST}</macro>
+                    <value>12333</value>
+                </macro>
+                <macro>
+                    <macro>{$TEST2}</macro>
+                    <value>mystrnew</value>
+                </macro>
+            </macros>
+            <templates/>
+            <screens/>
+        </template>
+    </templates>
+</zabbix_export>

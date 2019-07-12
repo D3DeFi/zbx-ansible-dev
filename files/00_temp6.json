@@ -1,0 +1,37 @@
+{
+  "zabbix_export" : {
+     "date" : "2019-07-11T11:15:11Z",
+     "templates" : [
+        {
+           "groups" : [
+              {
+                 "name" : "Templates"
+              }
+           ],
+           "applications" : [],
+           "description" : "6th testing template",
+           "name" : "00_temp6",
+           "items" : [],
+           "macros" : [
+              {
+                 "value" : "12345",
+                 "macro" : "{$TEST}"
+              },
+              {
+                 "value" : "mystr",
+                 "macro" : "{$TEST2}"
+              }
+           ],
+           "template" : "00_temp6",
+           "discovery_rules" : [],
+           "screens" : []
+        }
+     ],
+     "version" : "3.0",
+     "groups" : [
+        {
+           "name" : "Templates"
+        }
+     ]
+  }
+}
